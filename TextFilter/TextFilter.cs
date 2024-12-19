@@ -10,8 +10,17 @@ using ktsu.FuzzySearch;
 /// </summary>
 public enum TextFilterType
 {
+	/// <summary>
+	/// Specifies the type of text filter to be used.
+	/// </summary>
 	Glob,
+	/// <summary>
+	/// Specifies the type of text filter to be used.
+	/// </summary>
 	Regex,
+	/// <summary>
+	/// Specifies the type of text filter to be used.
+	/// </summary>
 	Fuzzy,
 }
 
@@ -20,8 +29,17 @@ public enum TextFilterType
 /// </summary>
 public enum TextFilterMatchOptions
 {
+	/// <summary>
+	/// Specifies the options for matching text filters by whole string.
+	/// </summary>
 	ByWholeString,
+	/// <summary>
+	/// Specifies the options for matching text filters by all words.
+	/// </summary>
 	ByWordAll,
+	/// <summary>
+	/// Specifies the options for matching text filters by any word.
+	/// </summary>
 	ByWordAny,
 }
 
