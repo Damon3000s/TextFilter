@@ -9,24 +9,54 @@ using ktsu.TextFilter;
 public class TextFilterTests
 {
 	[TestMethod]
-	public void GetHintGlobReturnsCorrectHint()
+	public void RankWithKeySelectorReturnsCorrectRanking()
 	{
-		string hint = TextFilter.GetHint(TextFilterType.Glob);
-		Assert.AreEqual("glob pattern, 'optional1* opti?nal2 +required -excluded' etc, text must contain one of the optional tokens, all of the required tokens, and none of the excluded tokens", hint);
+		var items = new List<(int Id, string Text)>
+					{
+						(1, "hello world"),
+						(2, "hello"),
+						(3, "world")
+					};
+		var result = TextFilter.Rank(items, item => item.Text, "helo").ToList();
+		CollectionAssert.AreEqual(new List<(int, string)> { (2, "hello"), (1, "hello world"), (3, "world") }, result);
 	}
 
 	[TestMethod]
-	public void GetHintRegexReturnsCorrectHint()
+	public void RankWithKeySelectorEmptyItemsReturnsEmpty()
 	{
-		string hint = TextFilter.GetHint(TextFilterType.Regex);
-		Assert.AreEqual("regex pattern, text must match the regex pattern", hint);
+		var items = new List<(int Id, string Text)>();
+		var result = TextFilter.Rank(items, item => item.Text, "helo").ToList();
+		Assert.AreEqual(0, result.Count);
 	}
 
 	[TestMethod]
-	public void GetHintFuzzyReturnsCorrectHint()
+	public void RankWithKeySelectorNullItemsThrowsArgumentNullException()
 	{
-		string hint = TextFilter.GetHint(TextFilterType.Fuzzy);
-		Assert.AreEqual("fuzzy pattern, text is ranked by how well it matches the pattern", hint);
+		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Rank<(int, string)>(null!, item => item.Item2, "helo").ToList());
+	}
+
+	[TestMethod]
+	public void RankWithKeySelectorNullKeySelectorThrowsArgumentNullException()
+	{
+		var items = new List<(int Id, string Text)>
+					{
+						(1, "hello world"),
+						(2, "hello"),
+						(3, "world")
+					};
+		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Rank(items, null!, "helo").ToList());
+	}
+
+	[TestMethod]
+	public void RankWithKeySelectorNullFilterThrowsArgumentNullException()
+	{
+		var items = new List<(int Id, string Text)>
+					{
+						(1, "hello world"),
+						(2, "hello"),
+						(3, "world")
+					};
+		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Rank(items, item => item.Text, null!).ToList());
 	}
 
 	[TestMethod]
@@ -313,5 +343,81 @@ public class TextFilterTests
 	{
 		var strings = new List<string> { "hello world", "hello", "world" };
 		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Rank(strings, null!).ToList());
+	}
+	[TestMethod]
+	public void FilterWithKeySelectorReturnsCorrectResults()
+	{
+		var items = new List<(int Id, string Text)>
+								{
+									(1, "hello world"),
+									(2, "hello"),
+									(3, "world")
+								};
+		var result = TextFilter.Filter(items, item => item.Text, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList();
+		CollectionAssert.AreEqual(new List<(int, string)> { (1, "hello world"), (2, "hello") }, result);
+	}
+
+	[TestMethod]
+	public void FilterWithKeySelectorEmptyItemsReturnsEmpty()
+	{
+		var items = new List<(int Id, string Text)>();
+		var result = TextFilter.Filter(items, item => item.Text, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList();
+		Assert.AreEqual(0, result.Count);
+	}
+
+	[TestMethod]
+	public void FilterWithKeySelectorNullItemsThrowsArgumentNullException()
+	{
+		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Filter<(int, string)>(null!, item => item.Item2, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList());
+	}
+
+	[TestMethod]
+	public void FilterWithKeySelectorNullKeySelectorThrowsArgumentNullException()
+	{
+		var items = new List<(int Id, string Text)>
+								{
+									(1, "hello world"),
+									(2, "hello"),
+									(3, "world")
+								};
+		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Filter(items, null!, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList());
+	}
+
+	[TestMethod]
+	public void FilterWithKeySelectorNullFilterThrowsArgumentNullException()
+	{
+		var items = new List<(int Id, string Text)>
+								{
+									(1, "hello world"),
+									(2, "hello"),
+									(3, "world")
+								};
+		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Filter(items, item => item.Text, null!).ToList());
+	}
+	[TestMethod]
+	public void GetHintReturnsCorrectHintForGlob()
+	{
+		string result = TextFilter.GetHint(TextFilterType.Glob);
+		Assert.AreEqual("glob pattern, 'optional1* opti?nal2 +required -excluded' etc, text must contain one of the optional tokens, all of the required tokens, and none of the excluded tokens", result);
+	}
+
+	[TestMethod]
+	public void GetHintReturnsCorrectHintForRegex()
+	{
+		string result = TextFilter.GetHint(TextFilterType.Regex);
+		Assert.AreEqual("regex pattern, text must match the regex pattern", result);
+	}
+
+	[TestMethod]
+	public void GetHintReturnsCorrectHintForFuzzy()
+	{
+		string result = TextFilter.GetHint(TextFilterType.Fuzzy);
+		Assert.AreEqual("fuzzy pattern, text is ranked by how well it matches the pattern", result);
+	}
+
+	[TestMethod]
+	public void GetHintThrowsNotImplementedExceptionForUnknownFilterType()
+	{
+		Assert.ThrowsException<NotImplementedException>(() => TextFilter.GetHint((TextFilterType)999));
 	}
 }

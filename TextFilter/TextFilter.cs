@@ -85,19 +85,35 @@ public static class TextFilter
 	/// <param name="textFilterMatchOptions">The options for matching text filters.</param>
 	/// <returns>A collection of strings that match the filter.</returns>
 	/// <remarks>When using fuzzy matching, the strings are sorted by their match score.</remarks>
-	public static IEnumerable<string> Filter(IEnumerable<string> strings, string filter, TextFilterType filterType = TextFilterType.Glob, TextFilterMatchOptions textFilterMatchOptions = TextFilterMatchOptions.ByWordAny)
+	public static IEnumerable<string> Filter(IEnumerable<string> strings, string filter, TextFilterType filterType = TextFilterType.Glob, TextFilterMatchOptions textFilterMatchOptions = TextFilterMatchOptions.ByWordAny) =>
+		Filter(strings, s => s, filter, filterType, textFilterMatchOptions);
+
+
+	/// <summary>
+	/// Filters the specified collection of items based on the provided filter and filter type.
+	/// </summary>
+	/// <typeparam name="TItem">The type of the items in the collection.</typeparam>
+	/// <param name="items">The collection of items to filter.</param>
+	/// <param name="keySelector">A function to extract the string key from an item.</param>
+	/// <param name="filter">The filter pattern.</param>
+	/// <param name="filterType">The type of the filter.</param>
+	/// <param name="textFilterMatchOptions">The options for matching text filters.</param>
+	/// <returns>A collection of items that match the filter.</returns>
+	/// <remarks>When using fuzzy matching, the items are sorted by their match score.</remarks>
+	public static IEnumerable<TItem> Filter<TItem>(IEnumerable<TItem> items, Func<TItem, string> keySelector, string filter, TextFilterType filterType = TextFilterType.Glob, TextFilterMatchOptions textFilterMatchOptions = TextFilterMatchOptions.ByWordAny)
 	{
-		ArgumentNullException.ThrowIfNull(strings);
+		ArgumentNullException.ThrowIfNull(items);
+		ArgumentNullException.ThrowIfNull(keySelector);
 		ArgumentNullException.ThrowIfNull(filter);
 
-		return strings.Select(text =>
+		return items.Select(item =>
 		{
-			bool isMatch = IsMatch(text, filter, out int score, filterType, textFilterMatchOptions);
-			return (text, isMatch, score);
+			bool isMatch = IsMatch(keySelector(item), filter, out int score, filterType, textFilterMatchOptions);
+			return (item, isMatch, score);
 		})
 		.Where(t => t.isMatch)
 		.OrderByDescending(t => t.score)
-		.Select(t => t.text);
+		.Select(t => t.item);
 	}
 
 	/// <summary>
@@ -107,18 +123,32 @@ public static class TextFilter
 	/// <param name="fuzzyFilter">The filter pattern.</param>
 	/// <returns>The collection of strings sorted by their match score.</returns>
 	/// <remarks>Uses fuzzy matching to rank the strings by their match score.</remarks>
-	public static IEnumerable<string> Rank(IEnumerable<string> strings, string fuzzyFilter)
+	public static IEnumerable<string> Rank(IEnumerable<string> strings, string fuzzyFilter) =>
+		Rank(strings, s => s, fuzzyFilter);
+
+
+	/// <summary>
+	/// Ranks the specified collection of items based on the provided fuzzy filter pattern.
+	/// </summary>
+	/// <typeparam name="TItem">The type of the items in the collection.</typeparam>
+	/// <param name="items">The collection of items to rank.</param>
+	/// <param name="keySelector">A function to extract the string key from an item.</param>
+	/// <param name="fuzzyFilter">The fuzzy filter pattern.</param>
+	/// <returns>The collection of items sorted by their match score.</returns>
+	/// <remarks>Uses fuzzy matching to rank the items by their match score.</remarks>
+	public static IEnumerable<TItem> Rank<TItem>(IEnumerable<TItem> items, Func<TItem, string> keySelector, string fuzzyFilter)
 	{
-		ArgumentNullException.ThrowIfNull(strings);
+		ArgumentNullException.ThrowIfNull(items);
+		ArgumentNullException.ThrowIfNull(keySelector);
 		ArgumentNullException.ThrowIfNull(fuzzyFilter);
 
-		return strings.Select(text =>
+		return items.Select(item =>
 		{
-			bool isMatch = IsMatch(text, fuzzyFilter, out int score, TextFilterType.Fuzzy);
-			return (text, isMatch, score);
+			bool isMatch = IsMatch(keySelector(item), fuzzyFilter, out int score, TextFilterType.Fuzzy);
+			return (item, isMatch, score);
 		})
 		.OrderByDescending(t => t.score)
-		.Select(t => t.text);
+		.Select(t => t.item);
 	}
 
 	/// <summary>
