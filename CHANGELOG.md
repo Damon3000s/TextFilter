@@ -1,3 +1,10 @@
+## v1.3.0 (minor)
+
+Changes since v1.2.0:
+
+- Add test for DoesMatchGlob with partial filter ([@matt-edmondson](https://github.com/matt-edmondson))
+- Properly handle partially constructed glob filters that have prefixes ([@matt-edmondson](https://github.com/matt-edmondson))
+
 ## v1.2.0 (minor)
 
 Changes since v1.1.0:
