@@ -518,4 +518,11 @@ public class TextFilterTests
 		bool result = TextFilter.DoesMatchGlob("hello world", "hello* missing*", TextFilterMatchOptions.ByWordAll);
 		Assert.IsFalse(result);
 	}
+
+	[TestMethod]
+	public void DoesMatchGlobHandlesPartialFilter()
+	{
+		bool result = TextFilter.DoesMatchGlob("hello world", "-", TextFilterMatchOptions.ByWordAll);
+		Assert.IsTrue(result);
+	}
 }
