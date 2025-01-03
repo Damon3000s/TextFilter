@@ -1,3 +1,12 @@
+## v1.2.0 (minor)
+
+Changes since v1.1.0:
+
+- Add scripts for automated metadata generation and project management ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add unit tests for TextFilter regex and glob matching ([@matt-edmondson](https://github.com/matt-edmondson))
+- Fix empty / invalid filter behaviour ([@matt-edmondson](https://github.com/matt-edmondson))
+- Renamed metadata files ([@matt-edmondson](https://github.com/matt-edmondson))
+
 ## v1.1.2-pre.1 (patch)
 
 Changes since v1.1.1:
