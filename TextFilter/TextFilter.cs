@@ -53,12 +53,15 @@ internal enum TextFilterTokenType
 /// <summary>
 /// Provides methods for filtering text based on different filter types and match options.
 /// </summary>
-public static class TextFilter
+public static partial class TextFilter
 {
 	private static HashSet<char> ExcludedTokenPrefixes { get; } = ['!', '-', '^'];
 	private static HashSet<char> RequiredTokenPrefixes { get; } = ['+'];
 	private static ConcurrentDictionary<string, Regex> RegexCache { get; } = [];
 	private static ConcurrentDictionary<string, Glob> GlobCache { get; } = [];
+
+	[GeneratedRegex(".*", RegexOptions.Compiled)]
+	private static partial Regex RegexMatchAnything();
 
 	/// <summary>
 	/// Gets a hint for the specified filter type.
@@ -166,13 +169,15 @@ public static class TextFilter
 		ArgumentNullException.ThrowIfNull(filter);
 
 		score = int.MinValue;
-		return filterType switch
-		{
-			TextFilterType.Glob => DoesMatchGlob(text, filter, textFilterMatchOptions),
-			TextFilterType.Regex => DoesMatchRegex(text, filter, textFilterMatchOptions),
-			TextFilterType.Fuzzy => Fuzzy.Contains(text, filter, out score),
-			_ => throw new NotImplementedException($"{nameof(TextFilterType)}.{filterType} has not been implemented"),
-		};
+
+		return string.IsNullOrWhiteSpace(filter)
+			|| filterType switch
+			{
+				TextFilterType.Glob => DoesMatchGlob(text, filter, textFilterMatchOptions),
+				TextFilterType.Regex => DoesMatchRegex(text, filter, textFilterMatchOptions),
+				TextFilterType.Fuzzy => Fuzzy.Contains(text, filter, out score),
+				_ => throw new NotImplementedException($"{nameof(TextFilterType)}.{filterType} has not been implemented"),
+			};
 	}
 
 	/// <summary>
@@ -231,6 +236,11 @@ public static class TextFilter
 
 		var filterTokens = ExtractGlobFilterTokens(filter);
 		var textTokens = ExtractTextTokens(text, textFilterMatchOptions);
+
+		if (filterTokens.Count == 0)
+		{
+			return true; // empty filter matches all text
+		}
 
 		if (!filterTokens.TryGetValue(TextFilterTokenType.Excluded, out var excludedTokens))
 		{
@@ -334,10 +344,21 @@ public static class TextFilter
 		ArgumentNullException.ThrowIfNull(text);
 		ArgumentNullException.ThrowIfNull(filter);
 
+		// check if regex is valid
 		var textTokens = ExtractTextTokens(text, textFilterMatchOptions);
 		if (!RegexCache.TryGetValue(filter, out var regex))
 		{
-			regex = new Regex(filter, RegexOptions.Compiled);
+			try
+			{
+				regex = new Regex(filter, RegexOptions.Compiled);
+			}
+			catch (ArgumentException)
+			{
+				// invalid regex pattern
+				// match anything if the pattern is invalid and cache it so that we don't trigger the exception again 
+				regex = RegexMatchAnything();
+			}
+
 			RegexCache.TryAdd(filter, regex);
 		}
 
