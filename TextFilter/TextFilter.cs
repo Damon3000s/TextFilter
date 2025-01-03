@@ -215,11 +215,17 @@ public static partial class TextFilter
 				? TextFilterTokenType.Required
 				: TextFilterTokenType.Optional;
 		})
-		.ToDictionary(g => g.Key, g =>
+		.Select(g =>
 		{
 			bool removePrefix = g.Key is TextFilterTokenType.Required or TextFilterTokenType.Excluded;
-			return (removePrefix ? g.Select(t => t[1..]) : g).ToHashSet();
-		});
+			return new
+			{
+				g.Key,
+				Value = (removePrefix ? g.Select(t => t[1..]) : g).Where(t => !string.IsNullOrEmpty(t)).ToHashSet(),
+			};
+		})
+		.Where(g => g.Value.Count != 0)
+		.ToDictionary(g => g.Key, g => g.Value);
 	}
 
 	/// <summary>
