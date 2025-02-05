@@ -14,6 +14,12 @@ Changes since v1.1.0:
 - Fix empty / invalid filter behaviour ([@matt-edmondson](https://github.com/matt-edmondson))
 - Renamed metadata files ([@matt-edmondson](https://github.com/matt-edmondson))
 
+## v1.1.5 (patch)
+
+Changes since v1.1.5-pre.7:
+
+- Add scripts for automated metadata generation and project management ([@matt-edmondson](https://github.com/matt-edmondson))
+
 ## v1.1.2-pre.1 (patch)
 
 Changes since v1.1.1:
