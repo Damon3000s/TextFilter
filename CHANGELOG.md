@@ -20,12 +20,6 @@ Changes since v1.1.5-pre.7:
 
 - Add scripts for automated metadata generation and project management ([@matt-edmondson](https://github.com/matt-edmondson))
 
-## v1.1.2-pre.1 (patch)
-
-Changes since v1.1.1:
-
-- Renamed metadata files ([@matt-edmondson](https://github.com/matt-edmondson))
-
 ## v1.1.0 (minor)
 
 Changes since v1.0.0:
