@@ -2,7 +2,9 @@ namespace ktsu.TextFilter;
 
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
+
 using DotNet.Globbing;
+
 using ktsu.FuzzySearch;
 
 /// <summary>
@@ -91,7 +93,6 @@ public static partial class TextFilter
 	public static IEnumerable<string> Filter(IEnumerable<string> strings, string filter, TextFilterType filterType = TextFilterType.Glob, TextFilterMatchOptions textFilterMatchOptions = TextFilterMatchOptions.ByWordAny) =>
 		Filter(strings, s => s, filter, filterType, textFilterMatchOptions);
 
-
 	/// <summary>
 	/// Filters the specified collection of items based on the provided filter and filter type.
 	/// </summary>
@@ -128,7 +129,6 @@ public static partial class TextFilter
 	/// <remarks>Uses fuzzy matching to rank the strings by their match score.</remarks>
 	public static IEnumerable<string> Rank(IEnumerable<string> strings, string fuzzyFilter) =>
 		Rank(strings, s => s, fuzzyFilter);
-
 
 	/// <summary>
 	/// Ranks the specified collection of items based on the provided fuzzy filter pattern.
@@ -263,10 +263,7 @@ public static partial class TextFilter
 			optionalTokens = [];
 		}
 
-		bool anyExcludedMatches = excludedTokens.Any(filterToken =>
-		{
-			return AnyTokenMatchesGlobFilter(filterToken, textTokens);
-		});
+		bool anyExcludedMatches = excludedTokens.Any(filterToken => AnyTokenMatchesGlobFilter(filterToken, textTokens));
 
 		if (anyExcludedMatches)
 		{
