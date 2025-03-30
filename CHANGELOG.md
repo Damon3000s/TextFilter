@@ -1,3 +1,9 @@
+## v1.5.1 (patch)
+
+Changes since v1.5.0:
+
+- Update packages ([@matt-edmondson](https://github.com/matt-edmondson))
+
 ## v1.5.0 (minor)
 
 Changes since v1.4.0:
