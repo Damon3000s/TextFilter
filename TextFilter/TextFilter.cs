@@ -1,3 +1,7 @@
+// Copyright (c) ktsu.dev
+// All rights reserved.
+// Licensed under the MIT license.
+
 namespace ktsu.TextFilter;
 
 using System.Collections.Concurrent;
@@ -112,7 +116,7 @@ public static partial class TextFilter
 
 		return items.Select(item =>
 		{
-			bool isMatch = IsMatch(keySelector(item), filter, out int score, filterType, textFilterMatchOptions);
+			var isMatch = IsMatch(keySelector(item), filter, out var score, filterType, textFilterMatchOptions);
 			return (item, isMatch, score);
 		})
 		.Where(t => t.isMatch)
@@ -147,7 +151,7 @@ public static partial class TextFilter
 
 		return items.Select(item =>
 		{
-			bool isMatch = IsMatch(keySelector(item), fuzzyFilter, out int score, TextFilterType.Fuzzy);
+			var isMatch = IsMatch(keySelector(item), fuzzyFilter, out var score, TextFilterType.Fuzzy);
 			return (item, isMatch, score);
 		})
 		.OrderByDescending(t => t.score)
@@ -204,10 +208,10 @@ public static partial class TextFilter
 
 	internal static Dictionary<TextFilterTokenType, HashSet<string>> ExtractGlobFilterTokens(string filter)
 	{
-		string[] filterTokens = filter.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+		var filterTokens = filter.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 		return filterTokens.GroupBy(t =>
 		{
-			char prefix = t.First();
+			var prefix = t.First();
 
 			return ExcludedTokenPrefixes.Contains(prefix)
 				? TextFilterTokenType.Excluded
@@ -217,7 +221,7 @@ public static partial class TextFilter
 		})
 		.Select(g =>
 		{
-			bool removePrefix = g.Key is TextFilterTokenType.Required or TextFilterTokenType.Excluded;
+			var removePrefix = g.Key is TextFilterTokenType.Required or TextFilterTokenType.Excluded;
 			return new
 			{
 				g.Key,
@@ -263,7 +267,7 @@ public static partial class TextFilter
 			optionalTokens = [];
 		}
 
-		bool anyExcludedMatches = excludedTokens.Any(filterToken => AnyTokenMatchesGlobFilter(filterToken, textTokens));
+		var anyExcludedMatches = excludedTokens.Any(filterToken => AnyTokenMatchesGlobFilter(filterToken, textTokens));
 
 		if (anyExcludedMatches)
 		{
@@ -274,7 +278,7 @@ public static partial class TextFilter
 			? Enumerable.Any
 			: Enumerable.All;
 
-		bool anyOptionalMatches = optionalMatchFunc(optionalTokens, filterToken => AnyTokenMatchesGlobFilter(filterToken, textTokens));
+		var anyOptionalMatches = optionalMatchFunc(optionalTokens, filterToken => AnyTokenMatchesGlobFilter(filterToken, textTokens));
 
 		if (optionalTokens.Count != 0 && !anyOptionalMatches)
 		{
@@ -285,7 +289,7 @@ public static partial class TextFilter
 			? AnyTokenMatchesGlobFilter
 			: AllTokensMatchGlobFilter;
 
-		bool allRequiredMatches = requiredTokens.All(filterToken => requiredMatchFunc(filterToken, textTokens));
+		var allRequiredMatches = requiredTokens.All(filterToken => requiredMatchFunc(filterToken, textTokens));
 
 		if (!allRequiredMatches)
 		{
