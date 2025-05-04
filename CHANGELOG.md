@@ -1,3 +1,8 @@
+## v1.5.3-pre.1 (prerelease)
+
+Changes since v1.5.2:
+
+- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
 ## v1.5.2 (patch)
 
 Changes since v1.5.1:
@@ -13,9 +18,7 @@ Changes since v1.5.2-pre.1:
 - Sync .editorconfig ([@ktsu[bot]](https://github.com/ktsu[bot]))
 ## v1.5.2-pre.1 (prerelease)
 
-Changes since v1.5.1:
-
-- Sync .editorconfig ([@ktsu[bot]](https://github.com/ktsu[bot]))
+Incremental prerelease update.
 ## v1.5.1 (patch)
 
 Changes since v1.5.0:
