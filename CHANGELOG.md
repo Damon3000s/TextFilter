@@ -21,6 +21,29 @@ Changes since v1.5.3-pre.15:
 - Update TextFilter library description ([@matt-edmondson](https://github.com/matt-edmondson))
 - Additional documentation ([@matt-edmondson](https://github.com/matt-edmondson))
 - Update packages ([@matt-edmondson](https://github.com/matt-edmondson))
+## v1.5.3-pre.16 (prerelease)
+
+Changes since v1.5.3-pre.15:
+
+- Enhance README with detailed usage examples and API reference; update project SDK references in .csproj files. ([@matt-edmondson](https://github.com/matt-edmondson))
+- Replace LICENSE file with LICENSE.md and update copyright information ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add unit tests for TextFilter regex and glob matching ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update LICENSE file to LICENSE.md with MIT License ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update packages ([@matt-edmondson](https://github.com/matt-edmondson))
+- Initial commit ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add test for DoesMatchGlob with partial filter ([@matt-edmondson](https://github.com/matt-edmondson))
+- Fix empty / invalid filter behaviour ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add scripts for automated metadata generation and project management ([@matt-edmondson](https://github.com/matt-edmondson))
+- Apply new editorconfig ([@matt-edmondson](https://github.com/matt-edmondson))
+- Renamed metadata files ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add LICENSE template ([@matt-edmondson](https://github.com/matt-edmondson))
+- Add key selector support to Filter and Rank methods ([@matt-edmondson](https://github.com/matt-edmondson))
+- Refactor test method names in TextFilterTests.cs ([@matt-edmondson](https://github.com/matt-edmondson))
+- Remove obsolete build configuration files and scripts, including Directory.Build.props, Directory.Build.targets, and various PowerShell scripts for metadata and version management. ([@matt-edmondson](https://github.com/matt-edmondson))
+- Properly handle partially constructed glob filters that have prefixes ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update TextFilter library description ([@matt-edmondson](https://github.com/matt-edmondson))
+- Additional documentation ([@matt-edmondson](https://github.com/matt-edmondson))
+- Update packages ([@matt-edmondson](https://github.com/matt-edmondson))
 ## v1.5.3-pre.15 (prerelease)
 
 Changes since v1.5.3-pre.14:
