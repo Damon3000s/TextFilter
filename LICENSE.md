@@ -1,6 +1,6 @@
 MIT License
 
-https://github.com/ktsu-dev/ktsu-dev/TextFilter
+https://github.com/ktsu-dev/TextFilter
 
 Copyright (c) 2023-2025 ktsu-dev
 
