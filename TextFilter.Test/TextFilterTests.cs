@@ -15,154 +15,154 @@ public class TextFilterTests
 	[TestMethod]
 	public void RankWithKeySelectorReturnsCorrectRanking()
 	{
-		var items = new List<(int Id, string Text)>
-					{
+		List<(int Id, string Text)> items =
+		[
 						(1, "hello world"),
 						(2, "hello"),
 						(3, "world")
-					};
-		var result = TextFilter.Rank(items, item => item.Text, "helo").ToList();
+					];
+		List<(int Id, string Text)> result = [.. TextFilter.Rank(items, item => item.Text, "helo")];
 		CollectionAssert.AreEqual(new List<(int, string)> { (2, "hello"), (1, "hello world"), (3, "world") }, result);
 	}
 
 	[TestMethod]
 	public void RankWithKeySelectorEmptyItemsReturnsEmpty()
 	{
-		var items = new List<(int Id, string Text)>();
-		var result = TextFilter.Rank(items, item => item.Text, "helo").ToList();
+		List<(int Id, string Text)> items = [];
+		List<(int Id, string Text)> result = [.. TextFilter.Rank(items, item => item.Text, "helo")];
 		Assert.AreEqual(0, result.Count);
 	}
 
 	[TestMethod]
 	public void RankWithKeySelectorNullItemsThrowsArgumentNullException()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Rank<(int, string)>(null!, item => item.Item2, "helo").ToList());
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.Rank<(int, string)>(null!, item => item.Item2, "helo").ToList());
 	}
 
 	[TestMethod]
 	public void RankWithKeySelectorNullKeySelectorThrowsArgumentNullException()
 	{
-		var items = new List<(int Id, string Text)>
-					{
+		List<(int Id, string Text)> items =
+		[
 						(1, "hello world"),
 						(2, "hello"),
 						(3, "world")
-					};
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Rank(items, null!, "helo").ToList());
+					];
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.Rank(items, null!, "helo").ToList());
 	}
 
 	[TestMethod]
 	public void RankWithKeySelectorNullFilterThrowsArgumentNullException()
 	{
-		var items = new List<(int Id, string Text)>
-					{
+		List<(int Id, string Text)> items =
+		[
 						(1, "hello world"),
 						(2, "hello"),
 						(3, "world")
-					};
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Rank(items, item => item.Text, null!).ToList());
+					];
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.Rank(items, item => item.Text, null!).ToList());
 	}
 
 	[TestMethod]
 	public void FilterGlobByWordAnyReturnsCorrectResults()
 	{
-		var strings = new List<string> { "hello world", "hello", "world" };
-		var result = TextFilter.Filter(strings, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList();
+		List<string> strings = ["hello world", "hello", "world"];
+		List<string> result = [.. TextFilter.Filter(strings, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny)];
 		CollectionAssert.AreEqual(new List<string> { "hello world", "hello" }, result);
 	}
 
 	[TestMethod]
 	public void FilterRegexByWordAnyReturnsCorrectResults()
 	{
-		var strings = new List<string> { "hello world", "hello", "world" };
-		var result = TextFilter.Filter(strings, "^hello", TextFilterType.Regex, TextFilterMatchOptions.ByWordAny).ToList();
+		List<string> strings = ["hello world", "hello", "world"];
+		List<string> result = [.. TextFilter.Filter(strings, "^hello", TextFilterType.Regex, TextFilterMatchOptions.ByWordAny)];
 		CollectionAssert.AreEqual(new List<string> { "hello world", "hello" }, result);
 	}
 
 	[TestMethod]
 	public void FilterFuzzyByWordAnyReturnsCorrectResults()
 	{
-		var strings = new List<string> { "hello world", "hello", "world" };
-		var result = TextFilter.Filter(strings, "helo", TextFilterType.Fuzzy, TextFilterMatchOptions.ByWordAny).ToList();
+		List<string> strings = ["hello world", "hello", "world"];
+		List<string> result = [.. TextFilter.Filter(strings, "helo", TextFilterType.Fuzzy, TextFilterMatchOptions.ByWordAny)];
 		CollectionAssert.AreEqual(new List<string> { "hello", "hello world" }, result);
 	}
 
 	[TestMethod]
 	public void IsMatchGlobByWordAnyReturnsTrue()
 	{
-		var result = TextFilter.IsMatch("hello world", "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.IsMatch("hello world", "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void IsMatchRegexByWordAnyReturnsTrue()
 	{
-		var result = TextFilter.IsMatch("hello world", "^hello", TextFilterType.Regex, TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.IsMatch("hello world", "^hello", TextFilterType.Regex, TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void IsMatchFuzzyByWordAnyReturnsTrue()
 	{
-		var result = TextFilter.IsMatch("hello world", "helo", TextFilterType.Fuzzy, TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.IsMatch("hello world", "helo", TextFilterType.Fuzzy, TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobByWordAnyReturnsTrue()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "hello*", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchGlob("hello world", "hello*", TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexByWordAnyReturnsTrue()
 	{
-		var result = TextFilter.DoesMatchRegex("hello world", "^hello", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchRegex("hello world", "^hello", TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void AnyTokenMatchesGlobFilterReturnsTrue()
 	{
-		var textTokens = new HashSet<string> { "hello", "world" };
-		var result = TextFilter.AnyTokenMatchesGlobFilter("hello*", textTokens);
+		HashSet<string> textTokens = ["hello", "world"];
+		bool result = TextFilter.AnyTokenMatchesGlobFilter("hello*", textTokens);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void AllTokensMatchGlobFilterReturnsFalse()
 	{
-		var textTokens = new HashSet<string> { "hello", "world" };
-		var result = TextFilter.AllTokensMatchGlobFilter("hello*", textTokens);
+		HashSet<string> textTokens = ["hello", "world"];
+		bool result = TextFilter.AllTokensMatchGlobFilter("hello*", textTokens);
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
 	public void ExtractTextTokensByWholeStringReturnsCorrectTokens()
 	{
-		var result = TextFilter.ExtractTextTokens("hello world", TextFilterMatchOptions.ByWholeString);
+		HashSet<string> result = TextFilter.ExtractTextTokens("hello world", TextFilterMatchOptions.ByWholeString);
 		CollectionAssert.AreEqual(new List<string> { "hello world" }, result.ToList());
 	}
 
 	[TestMethod]
 	public void ExtractTextTokensByWordAllReturnsCorrectTokens()
 	{
-		var result = TextFilter.ExtractTextTokens("hello world", TextFilterMatchOptions.ByWordAll);
+		HashSet<string> result = TextFilter.ExtractTextTokens("hello world", TextFilterMatchOptions.ByWordAll);
 		CollectionAssert.AreEqual(new List<string> { "hello", "world" }, result.ToList());
 	}
 
 	[TestMethod]
 	public void ExtractTextTokensByWordAnyReturnsCorrectTokens()
 	{
-		var result = TextFilter.ExtractTextTokens("hello world", TextFilterMatchOptions.ByWordAny);
+		HashSet<string> result = TextFilter.ExtractTextTokens("hello world", TextFilterMatchOptions.ByWordAny);
 		CollectionAssert.AreEqual(new List<string> { "hello", "world" }, result.ToList());
 	}
 
 	[TestMethod]
 	public void ExtractGlobFilterTokensReturnsCorrectTokens()
 	{
-		var result = TextFilter.ExtractGlobFilterTokens("hello* +required -excluded");
+		Dictionary<TextFilterTokenType, HashSet<string>> result = TextFilter.ExtractGlobFilterTokens("hello* +required -excluded");
 		CollectionAssert.AreEqual(new List<string> { "hello*" }, result[TextFilterTokenType.Optional].ToList());
 		CollectionAssert.AreEqual(new List<string> { "required" }, result[TextFilterTokenType.Required].ToList());
 		CollectionAssert.AreEqual(new List<string> { "excluded" }, result[TextFilterTokenType.Excluded].ToList());
@@ -171,86 +171,86 @@ public class TextFilterTests
 	[TestMethod]
 	public void DoesMatchGlobWithExcludedTokenReturnsFalse()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "hello* -world", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchGlob("hello world", "hello* -world", TextFilterMatchOptions.ByWordAny);
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithRequiredTokenReturnsTrue()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "hello* +world", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchGlob("hello world", "hello* +world", TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithOptionalTokenReturnsTrue()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "hello* world", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchGlob("hello world", "hello* world", TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexWithMultipleTokensReturnsTrue()
 	{
-		var result = TextFilter.DoesMatchRegex("hello world", "^hello|world$", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchRegex("hello world", "^hello|world$", TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexWithNoMatchReturnsFalse()
 	{
-		var result = TextFilter.DoesMatchRegex("hello world", "^test", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchRegex("hello world", "^test", TextFilterMatchOptions.ByWordAny);
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
 	public void FilterEmptyStringsReturnsEmpty()
 	{
-		var strings = new List<string>();
-		var result = TextFilter.Filter(strings, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList();
+		List<string> strings = [];
+		List<string> result = [.. TextFilter.Filter(strings, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny)];
 		Assert.AreEqual(0, result.Count);
 	}
 
 	[TestMethod]
 	public void FilterNullStringsThrowsArgumentNullException()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Filter(null!, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList());
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.Filter(null!, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList());
 	}
 
 	[TestMethod]
 	public void FilterEmptyFilterReturnsAllStrings()
 	{
-		var strings = new List<string> { "hello world", "hello", "world" };
-		var result = TextFilter.Filter(strings, "", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList();
+		List<string> strings = ["hello world", "hello", "world"];
+		List<string> result = [.. TextFilter.Filter(strings, "", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny)];
 		CollectionAssert.AreEqual(strings, result);
 	}
 
 	[TestMethod]
 	public void FilterNullFilterThrowsArgumentNullException()
 	{
-		var strings = new List<string> { "hello world", "hello", "world" };
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Filter(strings, null!, TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList());
+		List<string> strings = ["hello world", "hello", "world"];
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.Filter(strings, null!, TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList());
 	}
 
 	[TestMethod]
 	public void FilterLargeDatasetPerformance()
 	{
-		var strings = Enumerable.Range(0, 100000).Select(i => "string" + i).ToList();
-		var result = TextFilter.Filter(strings, "string*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList();
+		List<string> strings = [.. Enumerable.Range(0, 100000).Select(i => "string" + i)];
+		List<string> result = [.. TextFilter.Filter(strings, "string*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny)];
 		Assert.AreEqual(100000, result.Count);
 	}
 
 	[TestMethod]
 	public void FilterConcurrentAccess()
 	{
-		var strings = new List<string> { "hello world", "hello", "world" };
-		var tasks = new List<Task>();
+		List<string> strings = ["hello world", "hello", "world"];
+		List<Task> tasks = [];
 
-		for (var i = 0; i < 100; i++)
+		for (int i = 0; i < 100; i++)
 		{
 			tasks.Add(Task.Run(() =>
 			{
-				var result = TextFilter.Filter(strings, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList();
+				List<string> result = [.. TextFilter.Filter(strings, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny)];
 				CollectionAssert.AreEqual(new List<string> { "hello world", "hello" }, result);
 			}));
 		}
@@ -261,272 +261,272 @@ public class TextFilterTests
 	[TestMethod]
 	public void IsMatchNullTextThrowsArgumentNullException()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.IsMatch(null!, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny));
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.IsMatch(null!, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny));
 	}
 
 	[TestMethod]
 	public void IsMatchNullFilterThrowsArgumentNullException()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.IsMatch("hello world", null!, TextFilterType.Glob, TextFilterMatchOptions.ByWordAny));
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.IsMatch("hello world", null!, TextFilterType.Glob, TextFilterMatchOptions.ByWordAny));
 	}
 
 	[TestMethod]
 	public void AnyTokenMatchesGlobFilterNullFilterTokenThrowsArgumentNullException()
 	{
-		var textTokens = new HashSet<string> { "hello", "world" };
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.AnyTokenMatchesGlobFilter(null!, textTokens));
+		HashSet<string> textTokens = ["hello", "world"];
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.AnyTokenMatchesGlobFilter(null!, textTokens));
 	}
 
 	[TestMethod]
 	public void AnyTokenMatchesGlobFilterNullTextTokensThrowsArgumentNullException()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.AnyTokenMatchesGlobFilter("hello*", null!));
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.AnyTokenMatchesGlobFilter("hello*", null!));
 	}
 
 	[TestMethod]
 	public void AllTokensMatchGlobFilterNullFilterTokenThrowsArgumentNullException()
 	{
-		var textTokens = new HashSet<string> { "hello", "world" };
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.AllTokensMatchGlobFilter(null!, textTokens));
+		HashSet<string> textTokens = ["hello", "world"];
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.AllTokensMatchGlobFilter(null!, textTokens));
 	}
 
 	[TestMethod]
 	public void AllTokensMatchGlobFilterNullTextTokensThrowsArgumentNullException()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.AllTokensMatchGlobFilter("hello*", null!));
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.AllTokensMatchGlobFilter("hello*", null!));
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobNullTextThrowsArgumentNullException()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.DoesMatchGlob(null!, "hello*", TextFilterMatchOptions.ByWordAny));
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.DoesMatchGlob(null!, "hello*", TextFilterMatchOptions.ByWordAny));
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobNullFilterThrowsArgumentNullException()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.DoesMatchGlob("hello world", null!, TextFilterMatchOptions.ByWordAny));
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.DoesMatchGlob("hello world", null!, TextFilterMatchOptions.ByWordAny));
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexNullTextThrowsArgumentNullException()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.DoesMatchRegex(null!, "^hello", TextFilterMatchOptions.ByWordAny));
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.DoesMatchRegex(null!, "^hello", TextFilterMatchOptions.ByWordAny));
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexNullFilterThrowsArgumentNullException()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.DoesMatchRegex("hello world", null!, TextFilterMatchOptions.ByWordAny));
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.DoesMatchRegex("hello world", null!, TextFilterMatchOptions.ByWordAny));
 	}
 
 	[TestMethod]
 	public void RankFuzzyReturnsCorrectRanking()
 	{
-		var strings = new List<string> { "hello world", "hello", "world" };
-		var result = TextFilter.Rank(strings, "helo").ToList();
+		List<string> strings = ["hello world", "hello", "world"];
+		List<string> result = [.. TextFilter.Rank(strings, "helo")];
 		CollectionAssert.AreEqual(new List<string> { "hello", "hello world", "world" }, result);
 	}
 
 	[TestMethod]
 	public void RankEmptyStringsReturnsEmpty()
 	{
-		var strings = new List<string>();
-		var result = TextFilter.Rank(strings, "helo").ToList();
+		List<string> strings = [];
+		List<string> result = [.. TextFilter.Rank(strings, "helo")];
 		Assert.AreEqual(0, result.Count);
 	}
 
 	[TestMethod]
 	public void RankNullStringsThrowsArgumentNullException()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Rank(null!, "helo").ToList());
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.Rank(null!, "helo").ToList());
 	}
 
 	[TestMethod]
 	public void RankNullFilterThrowsArgumentNullException()
 	{
-		var strings = new List<string> { "hello world", "hello", "world" };
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Rank(strings, null!).ToList());
+		List<string> strings = ["hello world", "hello", "world"];
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.Rank(strings, null!).ToList());
 	}
 	[TestMethod]
 	public void FilterWithKeySelectorReturnsCorrectResults()
 	{
-		var items = new List<(int Id, string Text)>
-								{
+		List<(int Id, string Text)> items =
+		[
 									(1, "hello world"),
 									(2, "hello"),
 									(3, "world")
-								};
-		var result = TextFilter.Filter(items, item => item.Text, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList();
+								];
+		List<(int Id, string Text)> result = [.. TextFilter.Filter(items, item => item.Text, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny)];
 		CollectionAssert.AreEqual(new List<(int, string)> { (1, "hello world"), (2, "hello") }, result);
 	}
 
 	[TestMethod]
 	public void FilterWithKeySelectorEmptyItemsReturnsEmpty()
 	{
-		var items = new List<(int Id, string Text)>();
-		var result = TextFilter.Filter(items, item => item.Text, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList();
+		List<(int Id, string Text)> items = [];
+		List<(int Id, string Text)> result = [.. TextFilter.Filter(items, item => item.Text, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny)];
 		Assert.AreEqual(0, result.Count);
 	}
 
 	[TestMethod]
 	public void FilterWithKeySelectorNullItemsThrowsArgumentNullException()
 	{
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Filter<(int, string)>(null!, item => item.Item2, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList());
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.Filter<(int, string)>(null!, item => item.Item2, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList());
 	}
 
 	[TestMethod]
 	public void FilterWithKeySelectorNullKeySelectorThrowsArgumentNullException()
 	{
-		var items = new List<(int Id, string Text)>
-								{
+		List<(int Id, string Text)> items =
+		[
 									(1, "hello world"),
 									(2, "hello"),
 									(3, "world")
-								};
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Filter(items, null!, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList());
+								];
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.Filter(items, null!, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny).ToList());
 	}
 
 	[TestMethod]
 	public void FilterWithKeySelectorNullFilterThrowsArgumentNullException()
 	{
-		var items = new List<(int Id, string Text)>
-								{
+		List<(int Id, string Text)> items =
+		[
 									(1, "hello world"),
 									(2, "hello"),
 									(3, "world")
-								};
-		Assert.ThrowsException<ArgumentNullException>(() => TextFilter.Filter(items, item => item.Text, null!).ToList());
+								];
+		Assert.ThrowsExactly<ArgumentNullException>(() => TextFilter.Filter(items, item => item.Text, null!).ToList());
 	}
 	[TestMethod]
 	public void GetHintReturnsCorrectHintForGlob()
 	{
-		var result = TextFilter.GetHint(TextFilterType.Glob);
+		string result = TextFilter.GetHint(TextFilterType.Glob);
 		Assert.AreEqual("glob pattern, 'optional1* opti?nal2 +required -excluded' etc, text must contain one of the optional tokens, all of the required tokens, and none of the excluded tokens", result);
 	}
 
 	[TestMethod]
 	public void GetHintReturnsCorrectHintForRegex()
 	{
-		var result = TextFilter.GetHint(TextFilterType.Regex);
+		string result = TextFilter.GetHint(TextFilterType.Regex);
 		Assert.AreEqual("regex pattern, text must match the regex pattern", result);
 	}
 
 	[TestMethod]
 	public void GetHintReturnsCorrectHintForFuzzy()
 	{
-		var result = TextFilter.GetHint(TextFilterType.Fuzzy);
+		string result = TextFilter.GetHint(TextFilterType.Fuzzy);
 		Assert.AreEqual("fuzzy pattern, text is ranked by how well it matches the pattern", result);
 	}
 
 	[TestMethod]
 	public void GetHintThrowsNotImplementedExceptionForUnknownFilterType()
 	{
-		Assert.ThrowsException<NotImplementedException>(() => TextFilter.GetHint((TextFilterType)999));
+		Assert.ThrowsExactly<NotImplementedException>(() => TextFilter.GetHint((TextFilterType)999));
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexValidPatternReturnsTrue()
 	{
-		var result = TextFilter.DoesMatchRegex("hello world", "^hello", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchRegex("hello world", "^hello", TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexInvalidPatternReturnsTrue()
 	{
-		var result = TextFilter.DoesMatchRegex("hello world", "[", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchRegex("hello world", "[", TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexByWholeStringReturnsTrue()
 	{
-		var result = TextFilter.DoesMatchRegex("hello world", "^hello world$", TextFilterMatchOptions.ByWholeString);
+		bool result = TextFilter.DoesMatchRegex("hello world", "^hello world$", TextFilterMatchOptions.ByWholeString);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexByWordAnyReturnsFalse()
 	{
-		var result = TextFilter.DoesMatchRegex("hello world", "^test", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchRegex("hello world", "^test", TextFilterMatchOptions.ByWordAny);
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexByWordAllReturnsFalse()
 	{
-		var result = TextFilter.DoesMatchRegex("hello world", "^test", TextFilterMatchOptions.ByWordAll);
+		bool result = TextFilter.DoesMatchRegex("hello world", "^test", TextFilterMatchOptions.ByWordAll);
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexByWholeStringReturnsFalse()
 	{
-		var result = TextFilter.DoesMatchRegex("hello world", "^test$", TextFilterMatchOptions.ByWholeString);
+		bool result = TextFilter.DoesMatchRegex("hello world", "^test$", TextFilterMatchOptions.ByWholeString);
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithEmptyFilterReturnsTrue()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchGlob("hello world", "", TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithAllRequiredTokensReturnsTrue()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "hello* +hello +world", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchGlob("hello world", "hello* +hello +world", TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithMissingRequiredTokenReturnsFalse()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "hello* +missing", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchGlob("hello world", "hello* +missing", TextFilterMatchOptions.ByWordAny);
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithExcludedAndRequiredTokensReturnsFalse()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "hello* +world -hello", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchGlob("hello world", "hello* +world -hello", TextFilterMatchOptions.ByWordAny);
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithExcludedAndRequiredTokensReturnsTrue()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "hello* +world -missing", TextFilterMatchOptions.ByWordAny);
+		bool result = TextFilter.DoesMatchGlob("hello world", "hello* +world -missing", TextFilterMatchOptions.ByWordAny);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithByWholeStringOptionReturnsFalse()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "hello", TextFilterMatchOptions.ByWholeString);
+		bool result = TextFilter.DoesMatchGlob("hello world", "hello", TextFilterMatchOptions.ByWholeString);
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithByWordAllOptionReturnsTrue()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "hello* world*", TextFilterMatchOptions.ByWordAll);
+		bool result = TextFilter.DoesMatchGlob("hello world", "hello* world*", TextFilterMatchOptions.ByWordAll);
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithByWordAllOptionReturnsFalse()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "hello* missing*", TextFilterMatchOptions.ByWordAll);
+		bool result = TextFilter.DoesMatchGlob("hello world", "hello* missing*", TextFilterMatchOptions.ByWordAll);
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobHandlesPartialFilter()
 	{
-		var result = TextFilter.DoesMatchGlob("hello world", "-", TextFilterMatchOptions.ByWordAll);
+		bool result = TextFilter.DoesMatchGlob("hello world", "-", TextFilterMatchOptions.ByWordAll);
 		Assert.IsTrue(result);
 	}
 }

@@ -66,8 +66,8 @@ public static partial class TextFilter
 	private static ConcurrentDictionary<string, Regex> RegexCache { get; } = [];
 	private static ConcurrentDictionary<string, Glob> GlobCache { get; } = [];
 
-	[GeneratedRegex(".*", RegexOptions.Compiled)]
-	private static partial Regex RegexMatchAnything();
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "SYSLIB1045:Convert to 'GeneratedRegexAttribute'.", Justification = "Not available in older frameworks")]
+	private static Regex RegexMatchAnything() => new(".*", RegexOptions.Compiled);
 
 	/// <summary>
 	/// Gets a hint for the specified filter type.
@@ -110,13 +110,13 @@ public static partial class TextFilter
 	/// <remarks>When using fuzzy matching, the items are sorted by their match score.</remarks>
 	public static IEnumerable<TItem> Filter<TItem>(IEnumerable<TItem> items, Func<TItem, string> keySelector, string filter, TextFilterType filterType = TextFilterType.Glob, TextFilterMatchOptions textFilterMatchOptions = TextFilterMatchOptions.ByWordAny)
 	{
-		ArgumentNullException.ThrowIfNull(items);
-		ArgumentNullException.ThrowIfNull(keySelector);
-		ArgumentNullException.ThrowIfNull(filter);
+		Guard.NotNull(items);
+		Guard.NotNull(keySelector);
+		Guard.NotNull(filter);
 
 		return items.Select(item =>
 		{
-			var isMatch = IsMatch(keySelector(item), filter, out var score, filterType, textFilterMatchOptions);
+			bool isMatch = IsMatch(keySelector(item), filter, out int score, filterType, textFilterMatchOptions);
 			return (item, isMatch, score);
 		})
 		.Where(t => t.isMatch)
@@ -145,13 +145,13 @@ public static partial class TextFilter
 	/// <remarks>Uses fuzzy matching to rank the items by their match score.</remarks>
 	public static IEnumerable<TItem> Rank<TItem>(IEnumerable<TItem> items, Func<TItem, string> keySelector, string fuzzyFilter)
 	{
-		ArgumentNullException.ThrowIfNull(items);
-		ArgumentNullException.ThrowIfNull(keySelector);
-		ArgumentNullException.ThrowIfNull(fuzzyFilter);
+		Guard.NotNull(items);
+		Guard.NotNull(keySelector);
+		Guard.NotNull(fuzzyFilter);
 
 		return items.Select(item =>
 		{
-			var isMatch = IsMatch(keySelector(item), fuzzyFilter, out var score, TextFilterType.Fuzzy);
+			bool isMatch = IsMatch(keySelector(item), fuzzyFilter, out int score, TextFilterType.Fuzzy);
 			return (item, isMatch, score);
 		})
 		.OrderByDescending(t => t.score)
@@ -169,8 +169,8 @@ public static partial class TextFilter
 	/// <returns><c>true</c> if the text matches the filter pattern; otherwise, <c>false</c>.</returns>
 	public static bool IsMatch(string text, string filter, out int score, TextFilterType filterType = TextFilterType.Glob, TextFilterMatchOptions textFilterMatchOptions = TextFilterMatchOptions.ByWordAny)
 	{
-		ArgumentNullException.ThrowIfNull(text);
-		ArgumentNullException.ThrowIfNull(filter);
+		Guard.NotNull(text);
+		Guard.NotNull(filter);
 
 		score = int.MinValue;
 
@@ -179,7 +179,7 @@ public static partial class TextFilter
 			{
 				TextFilterType.Glob => DoesMatchGlob(text, filter, textFilterMatchOptions),
 				TextFilterType.Regex => DoesMatchRegex(text, filter, textFilterMatchOptions),
-				TextFilterType.Fuzzy => Fuzzy.Contains(text, filter, out score),
+				TextFilterType.Fuzzy => Fuzzy.Contains(text.AsSpan(), filter.AsSpan(), out score),
 				_ => throw new NotImplementedException($"{nameof(TextFilterType)}.{filterType} has not been implemented"),
 			};
 	}
@@ -200,18 +200,18 @@ public static partial class TextFilter
 		return textFilterMatchOptions switch
 		{
 			TextFilterMatchOptions.ByWholeString => [text],
-			TextFilterMatchOptions.ByWordAll => [.. text.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)],
-			TextFilterMatchOptions.ByWordAny => [.. text.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)],
+			TextFilterMatchOptions.ByWordAll => [.. text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim())],
+			TextFilterMatchOptions.ByWordAny => [.. text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim())],
 			_ => throw new NotImplementedException($"{nameof(TextFilterMatchOptions)}.{textFilterMatchOptions} has not been implemented"),
 		};
 	}
 
 	internal static Dictionary<TextFilterTokenType, HashSet<string>> ExtractGlobFilterTokens(string filter)
 	{
-		var filterTokens = filter.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+		string[] filterTokens = [.. filter.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim())];
 		return filterTokens.GroupBy(t =>
 		{
-			var prefix = t.First();
+			char prefix = t.First();
 
 			return ExcludedTokenPrefixes.Contains(prefix)
 				? TextFilterTokenType.Excluded
@@ -221,7 +221,7 @@ public static partial class TextFilter
 		})
 		.Select(g =>
 		{
-			var removePrefix = g.Key is TextFilterTokenType.Required or TextFilterTokenType.Excluded;
+			bool removePrefix = g.Key is TextFilterTokenType.Required or TextFilterTokenType.Excluded;
 			return new
 			{
 				g.Key,
@@ -241,33 +241,33 @@ public static partial class TextFilter
 	/// <returns><c>true</c> if the text matches the glob filter pattern; otherwise, <c>false</c>.</returns>
 	public static bool DoesMatchGlob(string text, string filter, TextFilterMatchOptions textFilterMatchOptions)
 	{
-		ArgumentNullException.ThrowIfNull(text);
-		ArgumentNullException.ThrowIfNull(filter);
+		Guard.NotNull(text);
+		Guard.NotNull(filter);
 
-		var filterTokens = ExtractGlobFilterTokens(filter);
-		var textTokens = ExtractTextTokens(text, textFilterMatchOptions);
+		Dictionary<TextFilterTokenType, HashSet<string>> filterTokens = ExtractGlobFilterTokens(filter);
+		HashSet<string> textTokens = ExtractTextTokens(text, textFilterMatchOptions);
 
 		if (filterTokens.Count == 0)
 		{
 			return true; // empty filter matches all text
 		}
 
-		if (!filterTokens.TryGetValue(TextFilterTokenType.Excluded, out var excludedTokens))
+		if (!filterTokens.TryGetValue(TextFilterTokenType.Excluded, out HashSet<string>? excludedTokens))
 		{
 			excludedTokens = [];
 		}
 
-		if (!filterTokens.TryGetValue(TextFilterTokenType.Required, out var requiredTokens))
+		if (!filterTokens.TryGetValue(TextFilterTokenType.Required, out HashSet<string>? requiredTokens))
 		{
 			requiredTokens = [];
 		}
 
-		if (!filterTokens.TryGetValue(TextFilterTokenType.Optional, out var optionalTokens))
+		if (!filterTokens.TryGetValue(TextFilterTokenType.Optional, out HashSet<string>? optionalTokens))
 		{
 			optionalTokens = [];
 		}
 
-		var anyExcludedMatches = excludedTokens.Any(filterToken => AnyTokenMatchesGlobFilter(filterToken, textTokens));
+		bool anyExcludedMatches = excludedTokens.Any(filterToken => AnyTokenMatchesGlobFilter(filterToken, textTokens));
 
 		if (anyExcludedMatches)
 		{
@@ -278,7 +278,7 @@ public static partial class TextFilter
 			? Enumerable.Any
 			: Enumerable.All;
 
-		var anyOptionalMatches = optionalMatchFunc(optionalTokens, filterToken => AnyTokenMatchesGlobFilter(filterToken, textTokens));
+		bool anyOptionalMatches = optionalMatchFunc(optionalTokens, filterToken => AnyTokenMatchesGlobFilter(filterToken, textTokens));
 
 		if (optionalTokens.Count != 0 && !anyOptionalMatches)
 		{
@@ -289,7 +289,7 @@ public static partial class TextFilter
 			? AnyTokenMatchesGlobFilter
 			: AllTokensMatchGlobFilter;
 
-		var allRequiredMatches = requiredTokens.All(filterToken => requiredMatchFunc(filterToken, textTokens));
+		bool allRequiredMatches = requiredTokens.All(filterToken => requiredMatchFunc(filterToken, textTokens));
 
 		if (!allRequiredMatches)
 		{
@@ -307,10 +307,10 @@ public static partial class TextFilter
 	/// <returns><c>true</c> if any token matches the glob filter token; otherwise, <c>false</c>.</returns>
 	public static bool AnyTokenMatchesGlobFilter(string filterToken, HashSet<string> textTokens)
 	{
-		ArgumentNullException.ThrowIfNull(filterToken);
-		ArgumentNullException.ThrowIfNull(textTokens);
+		Guard.NotNull(filterToken);
+		Guard.NotNull(textTokens);
 
-		if (!GlobCache.TryGetValue(filterToken, out var glob))
+		if (!GlobCache.TryGetValue(filterToken, out Glob? glob))
 		{
 			glob = Glob.Parse(filterToken);
 			GlobCache.TryAdd(filterToken, glob);
@@ -327,10 +327,10 @@ public static partial class TextFilter
 	/// <returns><c>true</c> if all tokens match the glob filter token; otherwise, <c>false</c>.</returns>
 	public static bool AllTokensMatchGlobFilter(string filterToken, HashSet<string> textTokens)
 	{
-		ArgumentNullException.ThrowIfNull(filterToken);
-		ArgumentNullException.ThrowIfNull(textTokens);
+		Guard.NotNull(filterToken);
+		Guard.NotNull(textTokens);
 
-		if (!GlobCache.TryGetValue(filterToken, out var glob))
+		if (!GlobCache.TryGetValue(filterToken, out Glob? glob))
 		{
 			glob = Glob.Parse(filterToken);
 			GlobCache.TryAdd(filterToken, glob);
@@ -348,12 +348,12 @@ public static partial class TextFilter
 	/// <returns><c>true</c> if the text matches the regex filter pattern; otherwise, <c>false</c>.</returns>
 	public static bool DoesMatchRegex(string text, string filter, TextFilterMatchOptions textFilterMatchOptions)
 	{
-		ArgumentNullException.ThrowIfNull(text);
-		ArgumentNullException.ThrowIfNull(filter);
+		Guard.NotNull(text);
+		Guard.NotNull(filter);
 
 		// check if regex is valid
-		var textTokens = ExtractTextTokens(text, textFilterMatchOptions);
-		if (!RegexCache.TryGetValue(filter, out var regex))
+		HashSet<string> textTokens = ExtractTextTokens(text, textFilterMatchOptions);
+		if (!RegexCache.TryGetValue(filter, out Regex? regex))
 		{
 			try
 			{
@@ -362,7 +362,7 @@ public static partial class TextFilter
 			catch (ArgumentException)
 			{
 				// invalid regex pattern
-				// match anything if the pattern is invalid and cache it so that we don't trigger the exception again 
+				// match anything if the pattern is invalid and cache it so that we don't trigger the exception again
 				regex = RegexMatchAnything();
 			}
 
