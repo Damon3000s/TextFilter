@@ -30,7 +30,7 @@ public class TextFilterTests
 	{
 		List<(int Id, string Text)> items = [];
 		List<(int Id, string Text)> result = [.. TextFilter.Rank(items, item => item.Text, "helo")];
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -91,35 +91,35 @@ public class TextFilterTests
 	public void IsMatchGlobByWordAnyReturnsTrue()
 	{
 		bool result = TextFilter.IsMatch("hello world", "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Glob pattern 'hello*' should match 'hello world'.");
 	}
 
 	[TestMethod]
 	public void IsMatchRegexByWordAnyReturnsTrue()
 	{
 		bool result = TextFilter.IsMatch("hello world", "^hello", TextFilterType.Regex, TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Regex pattern '^hello' should match 'hello world'.");
 	}
 
 	[TestMethod]
 	public void IsMatchFuzzyByWordAnyReturnsTrue()
 	{
 		bool result = TextFilter.IsMatch("hello world", "helo", TextFilterType.Fuzzy, TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Fuzzy pattern 'helo' should match 'hello world'.");
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobByWordAnyReturnsTrue()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "hello*", TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Glob pattern 'hello*' should match 'hello world' by word.");
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexByWordAnyReturnsTrue()
 	{
 		bool result = TextFilter.DoesMatchRegex("hello world", "^hello", TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Regex pattern '^hello' should match 'hello world' by word.");
 	}
 
 	[TestMethod]
@@ -127,7 +127,7 @@ public class TextFilterTests
 	{
 		HashSet<string> textTokens = ["hello", "world"];
 		bool result = TextFilter.AnyTokenMatchesGlobFilter("hello*", textTokens);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "At least one token should match glob filter 'hello*'.");
 	}
 
 	[TestMethod]
@@ -135,7 +135,7 @@ public class TextFilterTests
 	{
 		HashSet<string> textTokens = ["hello", "world"];
 		bool result = TextFilter.AllTokensMatchGlobFilter("hello*", textTokens);
-		Assert.IsFalse(result);
+		Assert.IsFalse(result, "Not all tokens match glob filter 'hello*' so should return false.");
 	}
 
 	[TestMethod]
@@ -172,35 +172,35 @@ public class TextFilterTests
 	public void DoesMatchGlobWithExcludedTokenReturnsFalse()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "hello* -world", TextFilterMatchOptions.ByWordAny);
-		Assert.IsFalse(result);
+		Assert.IsFalse(result, "Text containing excluded token 'world' should return false.");
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithRequiredTokenReturnsTrue()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "hello* +world", TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Text containing required token 'world' should return true.");
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithOptionalTokenReturnsTrue()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "hello* world", TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Text matching optional tokens should return true.");
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexWithMultipleTokensReturnsTrue()
 	{
 		bool result = TextFilter.DoesMatchRegex("hello world", "^hello|world$", TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Regex with multiple alternatives should match.");
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexWithNoMatchReturnsFalse()
 	{
 		bool result = TextFilter.DoesMatchRegex("hello world", "^test", TextFilterMatchOptions.ByWordAny);
-		Assert.IsFalse(result);
+		Assert.IsFalse(result, "Non-matching regex pattern should return false.");
 	}
 
 	[TestMethod]
@@ -208,7 +208,7 @@ public class TextFilterTests
 	{
 		List<string> strings = [];
 		List<string> result = [.. TextFilter.Filter(strings, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny)];
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -237,7 +237,7 @@ public class TextFilterTests
 	{
 		List<string> strings = [.. Enumerable.Range(0, 100000).Select(i => "string" + i)];
 		List<string> result = [.. TextFilter.Filter(strings, "string*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny)];
-		Assert.AreEqual(100000, result.Count);
+		Assert.HasCount(100000, result);
 	}
 
 	[TestMethod]
@@ -333,7 +333,7 @@ public class TextFilterTests
 	{
 		List<string> strings = [];
 		List<string> result = [.. TextFilter.Rank(strings, "helo")];
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -366,7 +366,7 @@ public class TextFilterTests
 	{
 		List<(int Id, string Text)> items = [];
 		List<(int Id, string Text)> result = [.. TextFilter.Filter(items, item => item.Text, "hello*", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny)];
-		Assert.AreEqual(0, result.Count);
+		Assert.IsEmpty(result);
 	}
 
 	[TestMethod]
@@ -429,104 +429,104 @@ public class TextFilterTests
 	public void DoesMatchRegexValidPatternReturnsTrue()
 	{
 		bool result = TextFilter.DoesMatchRegex("hello world", "^hello", TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Valid regex pattern '^hello' should match 'hello world'.");
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexInvalidPatternReturnsTrue()
 	{
 		bool result = TextFilter.DoesMatchRegex("hello world", "[", TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Invalid regex pattern should return true as a fallback.");
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexByWholeStringReturnsTrue()
 	{
 		bool result = TextFilter.DoesMatchRegex("hello world", "^hello world$", TextFilterMatchOptions.ByWholeString);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Regex matching whole string should return true.");
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexByWordAnyReturnsFalse()
 	{
 		bool result = TextFilter.DoesMatchRegex("hello world", "^test", TextFilterMatchOptions.ByWordAny);
-		Assert.IsFalse(result);
+		Assert.IsFalse(result, "Non-matching regex should return false for ByWordAny.");
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexByWordAllReturnsFalse()
 	{
 		bool result = TextFilter.DoesMatchRegex("hello world", "^test", TextFilterMatchOptions.ByWordAll);
-		Assert.IsFalse(result);
+		Assert.IsFalse(result, "Non-matching regex should return false for ByWordAll.");
 	}
 
 	[TestMethod]
 	public void DoesMatchRegexByWholeStringReturnsFalse()
 	{
 		bool result = TextFilter.DoesMatchRegex("hello world", "^test$", TextFilterMatchOptions.ByWholeString);
-		Assert.IsFalse(result);
+		Assert.IsFalse(result, "Non-matching regex should return false for ByWholeString.");
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithEmptyFilterReturnsTrue()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "", TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Empty filter should match any text.");
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithAllRequiredTokensReturnsTrue()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "hello* +hello +world", TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Text containing all required tokens should return true.");
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithMissingRequiredTokenReturnsFalse()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "hello* +missing", TextFilterMatchOptions.ByWordAny);
-		Assert.IsFalse(result);
+		Assert.IsFalse(result, "Text missing a required token should return false.");
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithExcludedAndRequiredTokensReturnsFalse()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "hello* +world -hello", TextFilterMatchOptions.ByWordAny);
-		Assert.IsFalse(result);
+		Assert.IsFalse(result, "Text containing excluded token should return false even with required token present.");
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithExcludedAndRequiredTokensReturnsTrue()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "hello* +world -missing", TextFilterMatchOptions.ByWordAny);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Text with required token and not containing excluded token should return true.");
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithByWholeStringOptionReturnsFalse()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "hello", TextFilterMatchOptions.ByWholeString);
-		Assert.IsFalse(result);
+		Assert.IsFalse(result, "Partial match with ByWholeString option should return false.");
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithByWordAllOptionReturnsTrue()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "hello* world*", TextFilterMatchOptions.ByWordAll);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "All words matching with ByWordAll option should return true.");
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobWithByWordAllOptionReturnsFalse()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "hello* missing*", TextFilterMatchOptions.ByWordAll);
-		Assert.IsFalse(result);
+		Assert.IsFalse(result, "Not all words matching with ByWordAll option should return false.");
 	}
 
 	[TestMethod]
 	public void DoesMatchGlobHandlesPartialFilter()
 	{
 		bool result = TextFilter.DoesMatchGlob("hello world", "-", TextFilterMatchOptions.ByWordAll);
-		Assert.IsTrue(result);
+		Assert.IsTrue(result, "Partial filter with only '-' should return true.");
 	}
 }

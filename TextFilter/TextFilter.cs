@@ -110,9 +110,9 @@ public static partial class TextFilter
 	/// <remarks>When using fuzzy matching, the items are sorted by their match score.</remarks>
 	public static IEnumerable<TItem> Filter<TItem>(IEnumerable<TItem> items, Func<TItem, string> keySelector, string filter, TextFilterType filterType = TextFilterType.Glob, TextFilterMatchOptions textFilterMatchOptions = TextFilterMatchOptions.ByWordAny)
 	{
-		Guard.NotNull(items);
-		Guard.NotNull(keySelector);
-		Guard.NotNull(filter);
+		Ensure.NotNull(items);
+		Ensure.NotNull(keySelector);
+		Ensure.NotNull(filter);
 
 		return items.Select(item =>
 		{
@@ -145,9 +145,9 @@ public static partial class TextFilter
 	/// <remarks>Uses fuzzy matching to rank the items by their match score.</remarks>
 	public static IEnumerable<TItem> Rank<TItem>(IEnumerable<TItem> items, Func<TItem, string> keySelector, string fuzzyFilter)
 	{
-		Guard.NotNull(items);
-		Guard.NotNull(keySelector);
-		Guard.NotNull(fuzzyFilter);
+		Ensure.NotNull(items);
+		Ensure.NotNull(keySelector);
+		Ensure.NotNull(fuzzyFilter);
 
 		return items.Select(item =>
 		{
@@ -169,8 +169,8 @@ public static partial class TextFilter
 	/// <returns><c>true</c> if the text matches the filter pattern; otherwise, <c>false</c>.</returns>
 	public static bool IsMatch(string text, string filter, out int score, TextFilterType filterType = TextFilterType.Glob, TextFilterMatchOptions textFilterMatchOptions = TextFilterMatchOptions.ByWordAny)
 	{
-		Guard.NotNull(text);
-		Guard.NotNull(filter);
+		Ensure.NotNull(text);
+		Ensure.NotNull(filter);
 
 		score = int.MinValue;
 
@@ -241,8 +241,8 @@ public static partial class TextFilter
 	/// <returns><c>true</c> if the text matches the glob filter pattern; otherwise, <c>false</c>.</returns>
 	public static bool DoesMatchGlob(string text, string filter, TextFilterMatchOptions textFilterMatchOptions)
 	{
-		Guard.NotNull(text);
-		Guard.NotNull(filter);
+		Ensure.NotNull(text);
+		Ensure.NotNull(filter);
 
 		Dictionary<TextFilterTokenType, HashSet<string>> filterTokens = ExtractGlobFilterTokens(filter);
 		HashSet<string> textTokens = ExtractTextTokens(text, textFilterMatchOptions);
@@ -307,8 +307,8 @@ public static partial class TextFilter
 	/// <returns><c>true</c> if any token matches the glob filter token; otherwise, <c>false</c>.</returns>
 	public static bool AnyTokenMatchesGlobFilter(string filterToken, HashSet<string> textTokens)
 	{
-		Guard.NotNull(filterToken);
-		Guard.NotNull(textTokens);
+		Ensure.NotNull(filterToken);
+		Ensure.NotNull(textTokens);
 
 		if (!GlobCache.TryGetValue(filterToken, out Glob? glob))
 		{
@@ -327,8 +327,8 @@ public static partial class TextFilter
 	/// <returns><c>true</c> if all tokens match the glob filter token; otherwise, <c>false</c>.</returns>
 	public static bool AllTokensMatchGlobFilter(string filterToken, HashSet<string> textTokens)
 	{
-		Guard.NotNull(filterToken);
-		Guard.NotNull(textTokens);
+		Ensure.NotNull(filterToken);
+		Ensure.NotNull(textTokens);
 
 		if (!GlobCache.TryGetValue(filterToken, out Glob? glob))
 		{
@@ -348,8 +348,8 @@ public static partial class TextFilter
 	/// <returns><c>true</c> if the text matches the regex filter pattern; otherwise, <c>false</c>.</returns>
 	public static bool DoesMatchRegex(string text, string filter, TextFilterMatchOptions textFilterMatchOptions)
 	{
-		Guard.NotNull(text);
-		Guard.NotNull(filter);
+		Ensure.NotNull(text);
+		Ensure.NotNull(filter);
 
 		// check if regex is valid
 		HashSet<string> textTokens = ExtractTextTokens(text, textFilterMatchOptions);
