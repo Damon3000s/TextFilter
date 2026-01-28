@@ -1,3 +1,6 @@
+## v1.5.5
+
+No significant changes detected since v1.5.5.
 ## v1.5.5 (patch)
 
 Changes since v1.5.4:
@@ -22,13 +25,7 @@ Changes since v1.5.5-pre.1:
 - Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
 ## v1.5.5-pre.1 (prerelease)
 
-Changes since v1.5.4:
-
-- Sync .runsettings ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync scripts\PSBuild.psm1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync .gitattributes ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync scripts\update-winget-manifests.ps1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
+Incremental prerelease update.
 ## v1.5.4 (patch)
 
 Changes since v1.5.3:
