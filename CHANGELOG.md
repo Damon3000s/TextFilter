@@ -1,3 +1,9 @@
+## v1.5.8 (patch)
+
+Changes since v1.5.7:
+
+- Remove legacy build scripts ([@matt-edmondson](https://github.com/matt-edmondson))
+
 ## v1.5.7 (patch)
 
 Changes since v1.5.6:
@@ -72,11 +78,7 @@ Changes since v1.5.7-pre.1:
 
 ## v1.5.7-pre.1 (prerelease)
 
-Changes since v1.5.6:
-
-- Sync scripts\update-winget-manifests.ps1 ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync global.json ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync COPYRIGHT.md ([@ktsu[bot]](https://github.com/ktsu[bot]))
+No significant changes detected since v1.5.7.
 
 ## v1.5.6 (patch)
 
