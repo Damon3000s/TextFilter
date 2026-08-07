@@ -1,7 +1,6 @@
-## v1.5.31 (patch)
+## v1.5.32 (patch)
 
-Changes since v1.5.30:
+Changes since v1.5.31:
 
-- Sync .github\workflows\dotnet.yml ([@ktsu[bot]](https://github.com/ktsu[bot]))
-- Sync global.json ([@ktsu[bot]](https://github.com/ktsu[bot]))
+- Bump the ktsu group with 11 updates ([@dependabot[bot]](https://github.com/dependabot[bot]))
 
