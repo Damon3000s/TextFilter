@@ -5,7 +5,8 @@
     <PackageReference Include="DotNet.Glob" />
     <PackageReference Include="ktsu.Extensions" />
     <PackageReference Include="ktsu.FuzzySearch" />
-    <PackageReference Include="Polyfill" />
-  
-    <PackageReference Include="System.Memory" /></ItemGroup>
+    <PackageReference Include="Polyfill" PrivateAssets="all" />
+    <PackageReference Include="System.Memory" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" />
+  </ItemGroup>
 </Project>
