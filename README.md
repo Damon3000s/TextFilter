@@ -8,7 +8,7 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/ktsu.TextFilter?label=Downloads&logo=nuget)](https://nuget.org/packages/ktsu.TextFilter)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ktsu-dev/TextFilter?label=Commits&logo=github)](https://github.com/ktsu-dev/TextFilter/commits/main)
 [![GitHub contributors](https://img.shields.io/github/contributors/ktsu-dev/TextFilter?label=Contributors&logo=github)](https://github.com/ktsu-dev/TextFilter/graphs/contributors)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ktsu-dev/TextFilter/dotnet.yml?label=Build&logo=github)](https://github.com/ktsu-dev/TextFilter/actions)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ktsu-dev/TextFilter/dotnet.yml?branch=main&label=Build&logo=github)](https://github.com/ktsu-dev/TextFilter/actions)
 
 ## Introduction
 
