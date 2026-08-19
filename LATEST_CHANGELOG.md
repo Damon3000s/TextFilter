@@ -1,4 +1,8 @@
-## v1.5.34
+## v1.5.35 (patch)
 
-No significant changes detected since v1.5.34.
+Changes since v1.5.34:
+
+- chore: store icon.png in LFS as .gitattributes declares ([@matt-edmondson](https://github.com/matt-edmondson))
+- docs: scope build badge to the default branch ([@matt-edmondson](https://github.com/matt-edmondson))
+- docs: correct README, DESCRIPTION and TAGS metadata ([@matt-edmondson](https://github.com/matt-edmondson))
 
