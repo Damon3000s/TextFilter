@@ -2,11 +2,13 @@
 
 > A .NET library for filtering text using glob patterns, regular expressions, and fuzzy matching
 
-[![License](https://img.shields.io/github/license/ktsu-dev/TextFilter)](https://github.com/ktsu-dev/TextFilter/blob/main/LICENSE.md)
-[![NuGet](https://img.shields.io/nuget/v/ktsu.TextFilter.svg)](https://www.nuget.org/packages/ktsu.TextFilter/)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/ktsu.TextFilter.svg)](https://www.nuget.org/packages/ktsu.TextFilter/)
-[![Build Status](https://github.com/ktsu-dev/TextFilter/workflows/build/badge.svg)](https://github.com/ktsu-dev/TextFilter/actions)
-[![GitHub Stars](https://img.shields.io/github/stars/ktsu-dev/TextFilter?style=social)](https://github.com/ktsu-dev/TextFilter/stargazers)
+[![License](https://img.shields.io/github/license/ktsu-dev/TextFilter.svg?label=License&logo=nuget)](LICENSE.md)
+[![NuGet Version](https://img.shields.io/nuget/v/ktsu.TextFilter?label=Stable&logo=nuget)](https://nuget.org/packages/ktsu.TextFilter)
+[![NuGet Version](https://img.shields.io/nuget/vpre/ktsu.TextFilter?label=Latest&logo=nuget)](https://nuget.org/packages/ktsu.TextFilter)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/ktsu.TextFilter?label=Downloads&logo=nuget)](https://nuget.org/packages/ktsu.TextFilter)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ktsu-dev/TextFilter?label=Commits&logo=github)](https://github.com/ktsu-dev/TextFilter/commits/main)
+[![GitHub contributors](https://img.shields.io/github/contributors/ktsu-dev/TextFilter?label=Contributors&logo=github)](https://github.com/ktsu-dev/TextFilter/graphs/contributors)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ktsu-dev/TextFilter/dotnet.yml?label=Build&logo=github)](https://github.com/ktsu-dev/TextFilter/actions)
 
 ## Introduction
 
