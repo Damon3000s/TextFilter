@@ -1,3 +1,9 @@
+## v1.7.14 (patch)
+
+Changes since v1.7.13:
+
+- Match a trailing dash in a glob class literally [patch] ([@Claude](https://github.com/Claude))
+
 ## v1.7.14-pre.3 (prerelease)
 
 Changes since v1.7.14-pre.2:
