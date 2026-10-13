@@ -922,7 +922,6 @@ public class TextFilterTests
 	[DataRow("a[b-")]
 	[DataRow("[!a-")]
 	[DataRow("*[0-")]
-	[DataRow("[a-]")]
 	[DataRow("-file[0-")]
 	[DataRow("!file[0-")]
 	[DataRow("^file[0-")]
@@ -939,6 +938,44 @@ public class TextFilterTests
 				TextFilter.Filter(["file1.txt"], pattern, TextFilterType.Glob, TextFilterMatchOptions.ByWordAny, caseSensitivity).ToList());
 		}
 	}
+
+	[TestMethod]
+	public void GlobClassWithATrailingDashMatchesTheDashLiterally()
+	{
+		// A "-" just before "]" is a literal dash, so "file[a-]" is a finished pattern matching "filea"
+		// and "file-". DotNet.Glob's tokeniser threw on it, and the token was then ignored as if half
+		// typed: the filter kept every item and the exclusion removed none.
+		List<string> items = ["filea", "file-", "fileZ", "report"];
+		foreach (TextFilterCaseSensitivity caseSensitivity in new[] { TextFilterCaseSensitivity.CaseSensitive, TextFilterCaseSensitivity.CaseInsensitive })
+		{
+			CollectionAssert.AreEqual(
+				new List<string> { "filea", "file-" },
+				TextFilter.Filter(items, "file[a-]", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny, caseSensitivity).ToList());
+			CollectionAssert.AreEqual(
+				new List<string> { "fileZ", "report" },
+				TextFilter.Filter(items, "-file[a-]", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny, caseSensitivity).ToList());
+			CollectionAssert.AreEqual(
+				new List<string> { "fileZ" },
+				TextFilter.Filter(items, "file[!a-]", TextFilterType.Glob, TextFilterMatchOptions.ByWordAny, caseSensitivity).ToList());
+		}
+
+		// A half-typed range is still unparseable and still ignored.
+		CollectionAssert.AreEqual(items, TextFilter.Filter(items, "file[0-", TextFilterType.Glob).ToList());
+		CollectionAssert.AreEqual(items, TextFilter.Filter(items, "-file[0-", TextFilterType.Glob).ToList());
+	}
+
+	[TestMethod]
+	[DataRow("file[a-]", "file[-a]")]
+	[DataRow("file[!a-]", "file[!-a]")]
+	[DataRow("[0-9a-]x[b-]", "[-0-9a]x[-b]")]
+	[DataRow("[]-]", "[-]]")]
+	[DataRow("[-]", "[-]")]
+	[DataRow("[a-z]", "[a-z]")]
+	[DataRow("file[0-", "file[0-")]
+	[DataRow("a]b", "a]b")]
+	[DataRow("[a-]x[0-", "[-a]x[0-")]
+	public void MoveTrailingClassDashesRewritesOnlyClosedClasses(string token, string expected) =>
+		Assert.AreEqual(expected, TextFilter.MoveTrailingClassDashes(token));
 
 	[TestMethod]
 	[DataRow("-readme[a-")]

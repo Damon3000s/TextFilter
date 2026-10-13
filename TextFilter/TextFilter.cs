@@ -3,6 +3,7 @@
 namespace ktsu.TextFilter;
 
 using System.Collections.Concurrent;
+using System.Text;
 using System.Text.RegularExpressions;
 
 using DotNet.Globbing;
@@ -466,6 +467,56 @@ public static partial class TextFilter
 		return [.. expansions.Select(prefix => prefix + tail).Distinct(StringComparer.Ordinal)];
 	}
 
+	// In glob syntax a "-" just before the closing "]" is a literal dash, so "[a-]" matches "a" or "-".
+	// DotNet.Glob's tokeniser reads it as a range left open and throws, as it does for the half-typed
+	// "[a-", so the dash is moved to the front of the class ("[-a]", "[!-a]"), a form it does parse.
+	// A class with no closing "]" is left alone and stays unparseable.
+	internal static string MoveTrailingClassDashes(string token)
+	{
+		if (!token.Contains(']'))
+		{
+			return token;
+		}
+
+		StringBuilder result = new(token.Length);
+		int index = 0;
+		while (index < token.Length)
+		{
+			int open = token.IndexOf('[', index);
+			if (open < 0)
+			{
+				break;
+			}
+
+			int contentStart = open + 1;
+			string negation = contentStart < token.Length && token[contentStart] == '!' ? "!" : string.Empty;
+			contentStart += negation.Length;
+
+			// A "]" straight after the opening bracket is a member of the class rather than its end.
+			int close = contentStart < token.Length ? token.IndexOf(']', contentStart + 1) : -1;
+			if (close < 0)
+			{
+				break;
+			}
+
+			string content = token[contentStart..close];
+			result.Append(token, index, open - index).Append('[').Append(negation);
+			if (content.Length > 1 && content[^1] == '-')
+			{
+				result.Append('-').Append(content, 0, content.Length - 1);
+			}
+			else
+			{
+				result.Append(content);
+			}
+
+			result.Append(']');
+			index = close + 1;
+		}
+
+		return result.Append(token, index, token.Length - index).ToString();
+	}
+
 	// Returns null for a token that cannot be parsed, so each caller can decide what ignoring it means.
 	private static Glob[]? ResolveGlob(string filterToken, TextFilterCaseSensitivity caseSensitivity)
 	{
@@ -475,7 +526,7 @@ public static partial class TextFilter
 		{
 			try
 			{
-				string maskedToken = MaskPathSeparators(filterToken);
+				string maskedToken = MaskPathSeparators(MoveTrailingClassDashes(filterToken));
 				globs = [.. ExpandGlobStarSegments(maskedToken).Select(pattern => caseSensitivity is TextFilterCaseSensitivity.CaseInsensitive
 					? Glob.Parse(pattern, CaseInsensitiveGlobOptions)
 					: Glob.Parse(pattern))];
